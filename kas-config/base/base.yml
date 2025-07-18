@@ -1,0 +1,23 @@
+header:
+  version: 14
+
+machine: "unset"
+
+distro: poky
+
+repos:
+  poky:
+    url: https://git.yoctoproject.org/git/poky
+    refspec: walnascar
+    layers:
+      meta:
+      meta-poky:
+      meta-yocto-bsp:
+
+local_conf_header:
+  common: |
+    CONF_VERSION = "2"
+    PACKAGE_CLASSES ?= "package_rpm"
+    DL_DIR ?= "${TOPDIR}/../downloads"
+    SSTATE_DIR ?= "${TOPDIR}/../sstate-cache"
+    TMPDIR ?= "${TOPDIR}/tmp"
