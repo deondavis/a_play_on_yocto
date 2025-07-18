@@ -1,0 +1,96 @@
+# kas local configuration template for kas version 4.7
+# Use this as `local.yml` to override or extend project settings
+# copy this and rename to local.yml for local development
+
+header:
+  version: 14  # Required: must match the KAS schema version
+
+  includes:
+    # Include upstream or base kas files here
+    - base.yml  # Relative path or URL to base configuration
+
+# Set default refspecs or branch names for all repositories
+defaults:
+  repos:
+    refspec: master  # Override with desired branch or tag
+
+repos:
+  meta-openembedded:
+    url: "https://git.openembedded.org/meta-openembedded"
+    path: "layers/meta-openembedded"
+    refspec: "langdale"
+    layers:
+      meta-oe:
+      meta-python:
+
+  my-layer:
+    url: "https://example.com/my/meta-layer.git"
+    path: "layers/meta-my-layer"
+    refspec: "main"
+    layers:
+      meta-my-layer:
+
+# Customize the build environment's machine, distro, and target image
+machine: "qemuarm64"
+distro: "poky"
+target: "core-image-minimal"
+
+# Set custom environment variables for the build process
+env:
+  BB_NUMBER_THREADS: "4"
+  PARALLEL_MAKE: "-j4"
+  DL_DIR: "${HOME}/yocto-downloads"
+  SSTATE_DIR: "${HOME}/yocto-sstate"
+
+# Append or override local.conf snippets
+local_conf_header:
+  custom: |
+    CONF_VERSION = "2"
+    PACKAGE_CLASSES = "package_rpm"
+    EXTRA_IMAGE_FEATURES += "debug-tweaks ssh-server-dropbear"
+
+  mirrors: |
+    INHERIT += "own-mirrors"
+    SOURCE_MIRROR_URL = "http://example.com/downloads"
+    SSTATE_MIRRORS = "file://.* http://example.com/sstate-cache/PATH;downloadfilename=PATH"
+
+  eula: |
+    MY_SOFTWARE_EULA_ACCEPTED = "1"
+
+# Define any BB layers not already covered in repo entries
+bblayers_conf_header:
+  custom: |
+    # Custom layer additions (optional)
+
+# Pin versions or tags for reproducible builds
+# You can use `kas checkout` to update these in locked-down setups
+lockdown:
+  enabled: false  # true for reproducible CI environments
+
+# Container setup
+# This is useful for keeping developer environments consistent
+docker:
+  enable: true
+  image: "ghcr.io/siemens/kas/kas:4.7"
+  # Use local checkout path for mounted build directory
+  run_args:
+    - "--net=host"
+    - "--rm"
+
+# Optional shell command or script to run post environment setup
+shell_command: |
+  echo "Running post-setup tasks..."
+
+# CI/CD helpers (useful with kas shell or kas for-all-repos)
+for_all_repos:
+  shell_command: |
+    echo "Checking repo status"
+    git status
+
+# Optional: add kas plugins or hook scripts
+#plugins:
+#  - path/to/plugin.py
+
+# Optional: restrict kas features for safety (CI builds etc.)
+#restrict:
+#  commands: ["build", "shell"]
