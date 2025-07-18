@@ -1,0 +1,16 @@
+choice
+    prompt "Select target machine"
+    default MACHINE_QEMUARM
+
+config MACHINE_QEMUARM
+    bool "qemuarm"
+
+config MACHINE_QEMUX86
+    bool "qemux86"
+
+endchoice
+
+config MACHINE
+    string
+    default "qemuarm" if MACHINE_QEMUARM
+    default "qemux86" if MACHINE_QEMUX86
