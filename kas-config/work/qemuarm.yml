@@ -1,6 +1,6 @@
 header:
   version: 14
   includes:
-    - base.yml
+    - kas-config/base/base.yml
 
 machine: "qemuarm"
